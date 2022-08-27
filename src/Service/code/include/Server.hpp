@@ -1,20 +1,13 @@
-/*
- * config.h 包含该tcp/ip套接字编程所需要的基本头文件
-*/
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <iostream>
 
-const int MAX_LINE = 2048;
-const int PORT = 990;
-const int BACKLOG = 10;
-const int LISTENQ = 6666;
-const int MAX_CONNECT = 20;
+#define BUFSIZE 50
+
+const int PORT = 990;//监听的端口号
+const char *IPAddress = "172.27.15.149";//监听的服务器本地的IP地址

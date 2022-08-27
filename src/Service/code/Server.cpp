@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#define BUFSIZE 50
- 
-const int PORT = 990;
-const char *IPAddress = "172.27.15.149";
+#include "Server.hpp"
 
 int main(){
     int serv_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -31,6 +21,9 @@ int main(){
              printf("Connected Error, re-try to get connected with client ... \n");
          }
     } while(clnt_sock < 0);
+
+    std::cout << "here get connected client" << std::endl;
+
     while(1) {
         char strBuffer[BUFSIZE];
         int dataLength = read(clnt_sock, strBuffer, sizeof(strBuffer)-1);
