@@ -26,7 +26,7 @@ public:
     void stop();
     void process();
 private:
-    int accept_cb(int fd, int events, void *arg);
+    int accept_cb(int fd, int events);
 
     std::uint16_t listenPort{0};
     std::int32_t listenSocket{INVAILD_SOCKET};

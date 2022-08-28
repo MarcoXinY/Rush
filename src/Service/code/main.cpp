@@ -9,6 +9,7 @@ int main(){
     // Parse config file
 
     std::unique_ptr<Service::HttpServer> httpServer(new Service::HttpServer(Service::PORT, Service::IPAddress));
+    //std::unique_ptr<Service::HttpServer> httpServer = std::make_unique<Service::HttpServer>(Service::PORT, Service::IPAddress);
     if(not httpServer->start())
     {
         return -1;

@@ -45,6 +45,7 @@ bool HttpServer::start()
     si->sockfd = listenSocket;
 	ev.data.ptr = si.get();
     ev.events = EPOLLIN;
+    ev.data.fd = listenSocket;
 
     ePoll->epollAdd(listenSocket, ev);
 
@@ -57,7 +58,7 @@ void HttpServer::stop()
     return;
 }
 
-int HttpServer::accept_cb(int fd, int events, void *arg)
+int HttpServer::accept_cb(int fd, int events)
 {
     struct sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
@@ -73,10 +74,10 @@ int HttpServer::accept_cb(int fd, int events, void *arg)
 	ev.events = EPOLLIN | EPOLLET;
 	//ev.data.fd = clientfd;
 
-	std::unique_ptr<lib::event::sockitem> si;
+	std::unique_ptr<lib::event::sockitem> si(new lib::event::sockitem());
 	si->sockfd = clientfd;
 	ev.data.ptr = si.get();;
-	
+
 	ePoll->epollAdd(clientfd, ev);
 
 	return clientfd;
@@ -86,12 +87,18 @@ void HttpServer::process()
 {
     for(;;)
     {
-        //int nready = epoll_wait(eventloop->epfd, eventloop->events, 512, -1);
-		// if (nready < -1) {
-		// 	break;
-		// }
-        std::cout << "HttpServer wait" << std::endl;
-        sleep(3);
+        std::int32_t nready = ePoll->epollWait();
+		if (nready < -1) {
+			break;
+		}
+        for(int i = 0; i < nready; i++)
+        {
+            auto events = ePoll->getEpollEvents();
+            if(events.at(i).data.fd == listenSocket)
+            {
+                accept_cb(listenSocket, events.at(i).events);
+            }
+        }
     }
 }
 

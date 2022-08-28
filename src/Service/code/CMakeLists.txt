@@ -19,7 +19,6 @@ link_directories("../../lib/build")
 add_executable(service ${SOURCES})
 
 include_directories("../../lib/include/")
-#FIND_LIBRARY(RUNTIME_LIB libevent /usr/lib  ../../lib/build NO_DEFAULT_PATH)
 
 target_link_libraries(service libevent.a)
 
