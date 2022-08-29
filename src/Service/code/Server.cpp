@@ -58,7 +58,7 @@ void HttpServer::stop()
     return;
 }
 
-int HttpServer::accept_cb(int fd, int events)
+int HttpServer::acceptCallBack(int fd, int events)
 {
     struct sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
@@ -72,7 +72,7 @@ int HttpServer::accept_cb(int fd, int events)
 
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
-	//ev.data.fd = clientfd;
+	ev.data.fd = clientfd;
 
 	std::unique_ptr<lib::event::sockitem> si(new lib::event::sockitem());
 	si->sockfd = clientfd;
@@ -81,6 +81,11 @@ int HttpServer::accept_cb(int fd, int events)
 	ePoll->epollAdd(clientfd, ev);
 
 	return clientfd;
+}
+
+int HttpServer::recvCallBack(int fd, epoll_event event)
+{
+    return 0;
 }
 
 void HttpServer::process()
@@ -96,7 +101,11 @@ void HttpServer::process()
             auto events = ePoll->getEpollEvents();
             if(events.at(i).data.fd == listenSocket)
             {
-                accept_cb(listenSocket, events.at(i).events);
+                acceptCallBack(listenSocket, events.at(i).events);
+            }
+            else
+            {
+                recvCallBack(listenSocket, events.at(i));
             }
         }
     }

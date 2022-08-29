@@ -4,10 +4,12 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Set the project name
-project (rush)
+project(Rush)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_library(lib eventPoll.cpp)
+add_subdirectory(Service)
+add_subdirectory(lib)
+add_subdirectory(Client)

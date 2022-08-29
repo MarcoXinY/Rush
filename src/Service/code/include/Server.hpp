@@ -11,7 +11,7 @@
 
 namespace Service
 {
-constexpr std::uint16_t PORT = 990;//监听的端口号
+constexpr std::uint16_t PORT = 991;//监听的端口号
 const std::string IPAddress = "172.27.15.149";//监听的服务器本地的IP地址
 constexpr std::uint32_t BUFSIZE = 1024;
 constexpr std::int32_t INVAILD_SOCKET = -1;
@@ -26,7 +26,8 @@ public:
     void stop();
     void process();
 private:
-    int accept_cb(int fd, int events);
+    int acceptCallBack(int fd, int events);
+    int recvCallBack(int fd, epoll_event event);
 
     std::uint16_t listenPort{0};
     std::int32_t listenSocket{INVAILD_SOCKET};

@@ -28,6 +28,8 @@ public:
     bool start(const std::int32_t&);
     void stop();
     void epollAdd(std::int32_t&, epoll_event&);
+    void epollDel(std::int32_t&, epoll_event&);
+    void epollMod(std::int32_t&, epoll_event&);
     std::int32_t epollWait();
     std::array<epoll_event, 512> getEpollEvents();
 private:
