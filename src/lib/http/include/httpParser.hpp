@@ -1,6 +1,8 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <iostream>
+
 namespace http{
 class HttpParser{
 private:
@@ -84,11 +86,12 @@ void HttpParser::show(){
 }
 
 std::string HttpParser::operator[](std::string str){
-    auto it = http.find(format_key(str));
-    return it != http.end() ? it->second : "";
+    auto it = http.find(str);
+    return it != http.end() ? it->second : "None";
 }
 
 std::string HttpParser::format_key(std::string &str){
+    //to do ... 搜索关键字优化
     if(str[0] >= 'a' && str[0] <= 'z'){
         str[0] = str[0] + 'A' - 'a';
     }
@@ -99,6 +102,7 @@ std::string HttpParser::format_key(std::string &str){
         }
         position++;
     }
+    std::cout << str << std::endl;
     return str;
 }
 }

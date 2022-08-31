@@ -5,9 +5,9 @@ namespace http
 RequestHeader::RequestHeader()
 {
 }
-void RequestHeader::AddHeaderOption(HeaderOption option,std::string cosnt& content)
+void RequestHeader::AddHeaderOption(HeaderOption option, const std::string& content)
 {
-    swith(option)
+    switch(option)
     {
         case HeaderOption::ContentType:
             headerMap.emplace("Content-Type",content);
@@ -24,11 +24,11 @@ std::string RequestHeader::ToString()
 {
     std::string headerString{};
 
-    for(auto headerOption :headerMap)
+    for(auto& headerOption : headerMap)
     {
-        headerString += headerMap->first +": "+ headerMap->second + "\r\n";
+        headerString += headerOption.first +": "+ headerOption.second + "\r\n";
     }
-    return headerString;
+    return headerString + "\r\n";
 }
 
 }

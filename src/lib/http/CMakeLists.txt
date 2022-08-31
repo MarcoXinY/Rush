@@ -3,29 +3,27 @@
 # $ cmake --version
 cmake_minimum_required(VERSION 3.5)
 
+# Set the project name
+project (httpTest)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Set the project name
-project (httplibTest)
-
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    src/httplib.cpp
     src/httpTest.cpp
-    src/cookie.cpp
-    src/headers.cpp
-    src/request.cpp
-    src/response.cpp
-    src/uri.cpp
+    src/RequestBody.cpp
+    src/RequestHeader.cpp
+    src/RequestLine.cpp
+    src/Response.cpp
 )
 
 # Add an executable with the above sources
-add_executable(httplibTest ${SOURCES})
+add_executable(httpTest ${SOURCES})
 
 # Set the directories that should be included in the build command for this target
 # when running g++ these will be included as -I/directory/path/
-target_include_directories(httplibTest
+target_include_directories(httpTest
     PRIVATE 
         ${PROJECT_SOURCE_DIR}/include
 )

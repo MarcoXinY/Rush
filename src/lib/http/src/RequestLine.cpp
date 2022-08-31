@@ -1,4 +1,3 @@
-#pragma once
 #include <string>
 #include "RequestLine.hpp"
 namespace http
@@ -8,7 +7,7 @@ namespace http
     }
     std::string RequestLine::ToString()
     {
-        swith(statusCode)
+        switch(statusCode)
         {//目前只是写了一部分的状态码 todo..
             case Staus::INVALID_CODE:
                 return httpVersion + " 0 " + "Invalid Code" + "\r\n";

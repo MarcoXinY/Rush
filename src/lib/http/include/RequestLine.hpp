@@ -56,5 +56,5 @@ public:
 private:
     std::string httpVersion{"HTTP/1.0"};
     Staus statusCode{Staus::OK};
-}
+};
 }
