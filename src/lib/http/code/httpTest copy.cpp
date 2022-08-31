@@ -75,13 +75,11 @@ cout << "Request information:\n"
 cout << size << " bytes" << endl;
 
 //直接发送数据
-// string first_line = "HTTP/1.0 200 OK\r\n";
-// string body = "<html><div><h1>hello world</h1></div></html>\r\n";
-// string header = "Content-Type: text/html\ncharset: gbk\nContent-Length:"+to_string(body.size())+"\r\n\r\n";
-// std::string message = first_line+header+body;
-//使用类
-Response response{"Hello !!!"};
-write(client_fd, response.c_str(), response.size());//返回message
+string first_line = "HTTP/1.0 200 OK\r\n";
+string body = "<html><div><h1>hello world</h1></div></html>\r\n";
+string header = "Content-Type: text/html\ncharset: gbk\nContent-Length:"+to_string(body.size())+"\r\n\r\n";
+
+std::string message = first_line+header+body;
 
 //9.使用第6步accept()返回socket描述符，即客户机的描述符，进行通信。
 write(client_fd, message.c_str(), message.size()+1);//返回message
