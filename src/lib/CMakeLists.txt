@@ -10,6 +10,8 @@ project (rush)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+add_subdirectory(http)
+
 add_library(event eventPoll.cpp)
 
 target_include_directories(event

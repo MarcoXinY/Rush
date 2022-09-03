@@ -13,8 +13,10 @@ struct sockitem {
 	int sockfd;
     //std::function<int(int, int, void*)> callback;
 
-	char recvbuffer[BUFFER_LENGTH];
-	char sendbuffer[BUFFER_LENGTH];
+	// char recvbuffer[BUFFER_LENGTH];
+	// char sendbuffer[BUFFER_LENGTH];
+    std::array<char, BUFFER_LENGTH> recvbuffer;
+    std::array<char, BUFFER_LENGTH> sendbuffer;
 
 	int rlength;
 	int slength;
