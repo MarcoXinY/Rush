@@ -1,7 +1,7 @@
 # Rush
 
 #### 介绍
-nothing (next version to do)
+http server arc
 
 #### 软件架构
 软件架构说明
