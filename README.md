@@ -15,9 +15,6 @@ nothing (next version to do)
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
 
 #### 参与贡献
 
