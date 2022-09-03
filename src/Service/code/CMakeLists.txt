@@ -16,6 +16,7 @@ set(SOURCES main.cpp Server.cpp)
 link_directories("../../build/lib" "../../build/lib/http")
 
 # Add an executable with the above sources
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../../Debug/)
 add_executable(service ${SOURCES})
 
 include_directories("../../lib/include/" "../../lib/http/include/")
