@@ -26,5 +26,3 @@ nothing (next version to do)
 3.  提交代码
 4.  新建 Pull Request
 
-
-#### 特技
