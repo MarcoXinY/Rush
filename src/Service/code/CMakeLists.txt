@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES main.cpp Server.cpp)
 
-link_directories("../../build/lib" "../../build/lib/http")
+link_directories(${CMAKE_SOURCE_DIR}/build/src/lib ${CMAKE_SOURCE_DIR}/build/src/lib/http)
 
 # Add an executable with the above sources
 add_executable(service ${SOURCES})

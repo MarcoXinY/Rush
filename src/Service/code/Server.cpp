@@ -87,11 +87,11 @@ int HttpServer::acceptCallBack(int fd, int events)
 
 void HttpServer::clientCallBakc(int fd, epoll_event& event)
 {
-    if(event.events & EPOLLIN | EPOLLET)
+    if(event.events & (EPOLLIN | EPOLLET))
     {
         recvCallBack(fd, event);
     }
-    else if(event.events & EPOLLOUT | EPOLLET)
+    else if(event.events & (EPOLLOUT | EPOLLET))
     {
         std::cout << "sendCallBack" << std::endl;
         sendCallBack(fd, event);
@@ -113,6 +113,8 @@ int HttpServer::sendCallBack(int fd, epoll_event& event)
 	ev.data.ptr = si;
 
 	ePoll->epollMod(fd, ev);
+
+    return 0;
 }
 
 int HttpServer::recvCallBack(int fd, epoll_event& event)
