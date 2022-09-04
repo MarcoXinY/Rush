@@ -13,10 +13,11 @@ namespace Service
 HttpServer::HttpServer(const std::uint16_t port,const std::string address):listenPort(port), listenAddress(address)
 {
     ePoll.reset(new lib::event::EPoll());
+    threadPool.reset(new lib::ThreadPool());
     return;
 }
 
-bool HttpServer::start()
+bool HttpServer::listenFdInit()
 {
     listenSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(listenSocket == INVAILD_SOCKET)
@@ -41,16 +42,23 @@ bool HttpServer::start()
         return false;
     }
 
-    ePoll->start(MAX_EPOLLSIZE);
-
     struct epoll_event ev = {};
     std::unique_ptr<lib::event::sockitem> si(new lib::event::sockitem());
-    //si->sockfd = listenSocket;
-	//ev.data.ptr = si.get();
     ev.events = EPOLLIN;
     ev.data.fd = listenSocket;
 
     ePoll->epollAdd(listenSocket, ev);
+    return true;
+}
+
+bool HttpServer::start()
+{
+    ePoll->start(MAX_EPOLLSIZE);
+    threadPool->start(MAX_THREAD);
+    if(listenFdInit())
+    {
+        return false;
+    }
 
     std::cout << "HttpServer start successful!" << std::endl;
     return true;
@@ -74,11 +82,9 @@ int HttpServer::acceptCallBack(int fd, int events)
 		ntohs(client_addr.sin_port));
 
 	struct epoll_event ev;
-    //lib::event::sockitem* si = new lib::event::sockitem();
-	//si->sockfd = clientfd;
+
 	ev.events = EPOLLIN | EPOLLET;
     ev.data.fd = clientfd;
-	//ev.data.ptr = si;
 
 	ePoll->epollAdd(clientfd, ev);
 
@@ -101,7 +107,6 @@ void HttpServer::clientCallBack(int fd, epoll_event& event)
 
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
-    //lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
     http::Response response{"are you happy now"};
 
 	send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
@@ -109,9 +114,6 @@ int HttpServer::sendCallBack(int fd, epoll_event& event)
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
 	ev.data.fd = fd;
-	//si->sockfd = fd;
-	//si->callback = recv_cb;
-	//ev.data.ptr = si;
 
 	ePoll->epollMod(fd, ev);
 
@@ -120,7 +122,6 @@ int HttpServer::sendCallBack(int fd, epoll_event& event)
 
 int HttpServer::recvCallBack(int fd, epoll_event& event)
 {
-    //lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
     struct epoll_event ev;
 
     char buffer[1024] = {0};
@@ -135,7 +136,6 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
         ePoll->epollDel(fd, ev);
 
 		close(fd);
-        //if(si != nullptr) delete si;
 	}
     else if (ret == 0)
     {
@@ -145,7 +145,6 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
 		ePoll->epollDel(fd, ev);
 
 		close(fd);
-        //if(si != nullptr) delete si;
     }
     else
     {
@@ -153,17 +152,9 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
         http::HttpParser http_package(buffer);
         http_package.show();
 
-		//si->rlength = ret;
-		//memcpy(si->sendbuffer.data(), si->recvbuffer.data(), si->rlength);
-        //si->sendbuffer.swap(si->recvbuffer);
-		//si->slength = si->rlength;
-
 		struct epoll_event ev;
 		ev.events = EPOLLOUT | EPOLLET;
         ev.data.fd = fd;
-		//si->sockfd = fd;
-		//si->callback = send_cb;
-		//ev.data.ptr = si;
 
         ePoll->epollMod(fd, ev);
     }

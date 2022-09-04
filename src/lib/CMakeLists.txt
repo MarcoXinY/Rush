@@ -12,9 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(http)
 
-add_library(event eventPoll.cpp)
+add_library(pool eventPoll.cpp threadPool.cpp)
 
-target_include_directories(event
+target_include_directories(pool
     PUBLIC 
         ${PROJECT_SOURCE_DIR}/include
 )
