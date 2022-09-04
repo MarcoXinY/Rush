@@ -11,8 +11,8 @@
 
 namespace Service
 {
-constexpr std::uint16_t PORT = 992;//监听的端口号
-const std::string IPAddress = "172.27.15.149";//监听的服务器本地的IP地址
+constexpr std::uint16_t PORT = 80;//监听的端口号
+const std::string IPAddress = "127.0.0.1";//监听的服务器本地的IP地址
 constexpr std::uint32_t BUFSIZE = 1024;
 constexpr std::int32_t INVAILD_SOCKET = -1;
 constexpr std::int32_t MAX_EPOLLSIZE = 100000;//socket 数量

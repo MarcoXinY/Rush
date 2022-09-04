@@ -5,8 +5,8 @@
 #include <sys/poll.h>
 #include <cstring>
 #include "Server.hpp"
-//#include "Response.hpp"
-//#include "httpParser.hpp"
+#include "Response.hpp"
+#include "httpParser.hpp"
 
 namespace Service
 {
@@ -26,7 +26,7 @@ bool HttpServer::start()
     }
 
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(listenAddress.c_str());
+    serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(listenPort);
 
     if(bind(listenSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
@@ -102,8 +102,9 @@ void HttpServer::clientCallBack(int fd, epoll_event& event)
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
     //lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
+    http::Response response{"are you happy now"};
 
-	send(fd, "hello\n", 6, 0);
+	send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
 
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
@@ -149,6 +150,8 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
     else
     {
         printf("Recv: %s, %d Bytes\n", buffer, ret);
+        http::HttpParser http_package(buffer);
+        http_package.show();
 
 		//si->rlength = ret;
 		//memcpy(si->sendbuffer.data(), si->recvbuffer.data(), si->rlength);
