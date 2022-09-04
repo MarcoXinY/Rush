@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(http)
+add_subdirectory(json)
 
 add_library(pool eventPoll.cpp threadPool.cpp)
 

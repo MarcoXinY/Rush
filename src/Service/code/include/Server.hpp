@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <string>
 #include "eventPoll.hpp"
 #include "threadPool.hpp"
 
@@ -33,6 +34,9 @@ private:
     void clientCallBack(int fd, epoll_event& event);
     int recvCallBack(int fd, epoll_event& event);
     int sendCallBack(int fd, epoll_event& event);
+    std::string fileGet();
+    void fileSave(std::string);
+    std::string GetpostResponse();
 
     std::uint16_t listenPort{0};
     std::int32_t listenSocket{INVAILD_SOCKET};
@@ -41,6 +45,7 @@ private:
     std::unique_ptr<lib::event::EPoll> ePoll;
     std::unique_ptr<lib::ThreadPool> threadPool;
     std::map<int, lib::event::sockitem> userContext;
+    int httpRequestType = 0;//0 表示get  1 表示 post
 };
 }//Server
 

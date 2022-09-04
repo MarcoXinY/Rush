@@ -12,7 +12,7 @@ RequestBody::RequestBody(const std::string& bodyContent)
 }
 std::string RequestBody::ToString()
 {
-    return "<html><div><h1>"+bodyContent+"</h1></div></html>\r\n";
+    return bodyContent;
 }
 
 }
