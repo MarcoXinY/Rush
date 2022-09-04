@@ -27,7 +27,7 @@ public:
     void process();
 private:
     int acceptCallBack(int fd, int events);
-    void clientCallBakc(int fd, epoll_event& event);
+    void clientCallBack(int fd, epoll_event& event);
     int recvCallBack(int fd, epoll_event& event);
     int sendCallBack(int fd, epoll_event& event);
 

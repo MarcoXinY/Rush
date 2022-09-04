@@ -45,10 +45,10 @@ bool HttpServer::start()
 
     struct epoll_event ev = {};
     std::unique_ptr<lib::event::sockitem> si(new lib::event::sockitem());
-    si->sockfd = listenSocket;
-	ev.data.ptr = si.get();
+    //si->sockfd = listenSocket;
+	//ev.data.ptr = si.get();
     ev.events = EPOLLIN;
-    //ev.data.fd = listenSocket;
+    ev.data.fd = listenSocket;
 
     ePoll->epollAdd(listenSocket, ev);
 
@@ -74,24 +74,24 @@ int HttpServer::acceptCallBack(int fd, int events)
 		ntohs(client_addr.sin_port));
 
 	struct epoll_event ev;
-    lib::event::sockitem* si = new lib::event::sockitem();
-	si->sockfd = clientfd;
+    //lib::event::sockitem* si = new lib::event::sockitem();
+	//si->sockfd = clientfd;
 	ev.events = EPOLLIN | EPOLLET;
-
-	ev.data.ptr = si;
+    ev.data.fd = clientfd;
+	//ev.data.ptr = si;
 
 	ePoll->epollAdd(clientfd, ev);
 
 	return clientfd;
 }
 
-void HttpServer::clientCallBakc(int fd, epoll_event& event)
+void HttpServer::clientCallBack(int fd, epoll_event& event)
 {
-    if(event.events & (EPOLLIN | EPOLLET))
+    if(event.events & EPOLLIN )
     {
         recvCallBack(fd, event);
     }
-    else if(event.events & (EPOLLOUT | EPOLLET))
+    else if(event.events & EPOLLOUT)
     {
         std::cout << "sendCallBack" << std::endl;
         sendCallBack(fd, event);
@@ -101,16 +101,16 @@ void HttpServer::clientCallBakc(int fd, epoll_event& event)
 
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
-    lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
+    //lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
 
-	send(fd, si->sendbuffer.data(), si->slength, 0);
+	send(fd, "hello\n", 6, 0);
 
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
-	//ev.data.fd = fd;
-	si->sockfd = fd;
+	ev.data.fd = fd;
+	//si->sockfd = fd;
 	//si->callback = recv_cb;
-	ev.data.ptr = si;
+	//ev.data.ptr = si;
 
 	ePoll->epollMod(fd, ev);
 
@@ -119,11 +119,11 @@ int HttpServer::sendCallBack(int fd, epoll_event& event)
 
 int HttpServer::recvCallBack(int fd, epoll_event& event)
 {
-    lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
+    //lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
     struct epoll_event ev;
 
-    int ret = recv(fd, si->recvbuffer.data(), lib::event::BUFFER_LENGTH, 0);
-    std::cout << "yhx: " << ret << std::endl; 
+    char buffer[1024] = {0};
+    int ret = recv(fd, buffer, 1024, 0);
     if (ret < 0)
     {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) { 
@@ -134,7 +134,7 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
         ePoll->epollDel(fd, ev);
 
 		close(fd);
-        if(si != nullptr) delete si;
+        //if(si != nullptr) delete si;
 	}
     else if (ret == 0)
     {
@@ -144,22 +144,23 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
 		ePoll->epollDel(fd, ev);
 
 		close(fd);
-        if(si != nullptr) delete si;
+        //if(si != nullptr) delete si;
     }
     else
     {
-        printf("Recv: %s, %d Bytes\n", si->recvbuffer.data(), ret);
+        printf("Recv: %s, %d Bytes\n", buffer, ret);
 
-		si->rlength = ret;
-		memcpy(si->sendbuffer.data(), si->recvbuffer.data(), si->rlength);
+		//si->rlength = ret;
+		//memcpy(si->sendbuffer.data(), si->recvbuffer.data(), si->rlength);
         //si->sendbuffer.swap(si->recvbuffer);
-		si->slength = si->rlength;
+		//si->slength = si->rlength;
 
 		struct epoll_event ev;
 		ev.events = EPOLLOUT | EPOLLET;
-		si->sockfd = fd;
+        ev.data.fd = fd;
+		//si->sockfd = fd;
 		//si->callback = send_cb;
-		ev.data.ptr = si;
+		//ev.data.ptr = si;
 
         ePoll->epollMod(fd, ev);
     }
@@ -178,16 +179,16 @@ void HttpServer::process()
         for(int i = 0; i < nready; i++)
         {
             auto events = ePoll->getEpollEvents();
-            lib::event::sockitem si = *static_cast<lib::event::sockitem*>(events.at(i).data.ptr);
-            if(si.sockfd == listenSocket)
+            auto triggerFd = events.at(i).data.fd;
+            if(triggerFd == listenSocket)
             {
                 std::cout << "listenSocket: " << listenSocket << std::endl;
                 acceptCallBack(listenSocket, events.at(i).events);
             }
             else
             {
-                std::cout << "si->sockfd: " << si.sockfd << std::endl;
-                clientCallBakc(si.sockfd, events.at(i));
+                std::cout << "triggerFd: " << triggerFd << std::endl;
+                clientCallBack(triggerFd, events.at(i));
             }
         }
     }
