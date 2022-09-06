@@ -59,7 +59,7 @@ bool HttpServer::listenFdInit()
 bool HttpServer::start()
 {
     ePoll->start(MAX_EPOLLSIZE);
-    threadPool->start(MAX_THREAD);
+    //threadPool->start(MAX_THREAD);
     if(listenFdInit())
     {
         return false;
