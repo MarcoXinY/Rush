@@ -95,7 +95,7 @@ std::string HttpParser::format_key(std::string &str){
     if(str[0] >= 'a' && str[0] <= 'z'){
         str[0] = str[0] + 'A' - 'a';
     }
-    unsigned int position = 0;
+    int position = 0;
     while((position = str.find("-", position)) != std::string::npos){
         if(str[position + 1] >= 'a' && str[position + 1] <= 'z'){
             str[position + 1] = str[position + 1] + 'A' - 'a';

@@ -60,7 +60,7 @@ bool HttpServer::start()
 {
     ePoll->start(MAX_EPOLLSIZE);
     //threadPool->start(MAX_THREAD);
-    if(listenFdInit())
+    if(not listenFdInit())
     {
         return false;
     }
@@ -112,11 +112,6 @@ void HttpServer::clientCallBack(int fd, epoll_event& event)
 
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
-    //lib::event::sockitem* si = static_cast<lib::event::sockitem*>(event.data.ptr);
-    // http::Response response{"are you happy now"};
-
-	// send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
-
     if(httpRequestType == 0) //GET
     {
         std::string hsitory = fileGet();
@@ -182,11 +177,6 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
             httpRequestType = 1;//0 表示get  1 表示 post
             fileSave(http_package["body"]);
         }
-
-		//si->rlength = ret;
-		//memcpy(si->sendbuffer.data(), si->recvbuffer.data(), si->rlength);
-        //si->sendbuffer.swap(si->recvbuffer);
-		//si->slength = si->rlength;
 
 		struct epoll_event ev;
 		ev.events = EPOLLOUT | EPOLLET;

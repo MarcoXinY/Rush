@@ -20,7 +20,7 @@ add_executable(service ${SOURCES})
 
 include_directories("../../lib/include/" "../../lib/http/include/" "../../lib/json/include/")
 
-target_link_libraries(service libevent.a libhttp.a libjson.a)
+target_link_libraries(service libpool.a libhttp.a libjson.a)
 
 # Set the directories that should be included in the build command for this target
 # when running g++ these will be included as -I/directory/path/
