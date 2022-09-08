@@ -10,6 +10,7 @@
 #include "Response.hpp"
 #include "httpParser.hpp"
 #include "json11.hpp"
+#include "WebSocket.hpp"
 
 using namespace json11;
 

@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(http)
 add_subdirectory(json)
+add_subdirectory(webSocket)
 
 add_library(pool eventPoll.cpp threadPool.cpp)
 
