@@ -10,7 +10,6 @@
 #include "Response.hpp"
 #include "httpParser.hpp"
 #include "json11.hpp"
-#include "WebSocket.hpp"
 
 using namespace json11;
 
@@ -113,19 +112,21 @@ void HttpServer::clientCallBack(int fd, epoll_event& event)
 
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
-    if(httpRequestType == 0) //GET
-    {
-        std::string hsitory = fileGet();
-        http::Response response{hsitory};
-        send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
-    }
+    // if(httpRequestType == 0) //GET
+    // {
+    //     std::string hsitory = fileGet();
+    //     http::Response response{hsitory};
+    //     send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
+    // }
 
-    if(httpRequestType == 1) //POST
-    {
-        std::string postEmptyResponse = GetpostResponse();
-        http::Response response{postEmptyResponse};
-	    send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
-    }
+    // if(httpRequestType == 1) //POST
+    // {
+    //     std::string postEmptyResponse = GetpostResponse();
+    //     http::Response response{postEmptyResponse};
+	//     send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
+    // }
+    std::string response = chatMap[fd].responseWithProcessResult();
+    send(fd, response.c_str(), response.size(), 0);
 
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
@@ -151,6 +152,12 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
 		ev.events = EPOLLIN;
         ePoll->epollDel(fd, ev);
 
+        auto chat = chatMap.find(fd);
+        if(chat != chatMap.end())
+        {
+            chatMap.erase(chat);
+            std::cout << chatMap.size() << std::endl;
+        }
 		close(fd);
 	}
     else if (ret == 0)
@@ -160,23 +167,29 @@ int HttpServer::recvCallBack(int fd, epoll_event& event)
 		ev.events = EPOLLIN;
 		ePoll->epollDel(fd, ev);
 
+        auto chat = chatMap.find(fd);
+        if(chat != chatMap.end())
+        {
+            chatMap.erase(chat);
+            std::cout << chatMap.size() << std::endl;
+        }
 		close(fd);
     }
     else
     {
-        printf("Recv: %s, %d Bytes\n", buffer, ret);
-        http::HttpParser http_package(buffer);
-        http_package.show();
+        // printf("Recv: %s, %d Bytes\n", buffer, ret);
+        // http::HttpParser http_package(buffer);
+        // http_package.show();
 
-        if(http_package["method"] == "GET")
+        auto chatClient = chatMap.find(fd);
+        if(chatMap.find(fd) == chatMap.end())
         {
-            httpRequestType = 0;//0 表示get  1 表示 post
+            chatMap.insert(pair<int, Chat>(fd, Chat()));
+            chatMap[fd].processRequest((unsigned char*)buffer, ret);
         }
-
-        if(http_package["method"] == "POST")
+        else
         {
-            httpRequestType = 1;//0 表示get  1 表示 post
-            fileSave(http_package["body"]);
+            chatClient->second.processRequest((unsigned char*)buffer, ret);
         }
 
 		struct epoll_event ev;

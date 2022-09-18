@@ -1,11 +1,9 @@
+#pragma once
 // WebSocket, v1.00 2012-09-13
 //
 // Description: WebSocket RFC6544 codec, written in C++.
 // Homepage: http://katzarsky.github.com/WebSocket
 // Author: katzarsky@gmail.com
-
-#ifndef WEBSOCKET_H
-#define	WEBSOCKET_H
 
 #include <assert.h>
 #include <stdint.h> /* uint8_t */
@@ -15,10 +13,13 @@
 
 // std c++
 #include <vector> 
-#include <string> 
+#include <string>
+#include <map>
 
 using namespace std;
 
+namespace webSocketLib
+{
 enum WebSocketFrameType {
 	ERROR_FRAME=0xFF00,
 	INCOMPLETE_FRAME=0xFE00,
@@ -45,6 +46,7 @@ class WebSocket
 	string origin;
 	string protocol;
 	string key;
+	std::map<std::string, std::string> params;
 
 	WebSocket();
 
@@ -59,8 +61,9 @@ class WebSocket
 	int makeFrame(WebSocketFrameType frame_type, unsigned char* msg, int msg_len, unsigned char* buffer, int buffer_len);
 	WebSocketFrameType getFrame(unsigned char* in_buffer, int in_length, unsigned char* out_buffer, int out_size, int* out_length);
 
+private:
 	string trim(string str);
 	vector<string> explode(string theString, string theDelimiter, bool theIncludeEmptyStrings = false );
 };
 
-#endif	/* WEBSOCKET_H */
+}//namespace webSocketLib

@@ -17,8 +17,12 @@
 
 using namespace std;
 
+namespace webSocketLib
+{
 WebSocket::WebSocket() {
-
+	//just for Test
+	params["localName"] = "123";
+	params["peerName"] = "456";
 }
 
 WebSocketFrameType WebSocket::parseHandshake(unsigned char* input_frame, int input_len)
@@ -80,7 +84,7 @@ string WebSocket::trim(string str)
 	return str;
 }
 
-vector<string> WebSocket::explode(	
+vector<string> WebSocket::explode(
 	string  theString,
     string  theDelimiter,
     bool    theIncludeEmptyStrings)
@@ -271,3 +275,5 @@ WebSocketFrameType WebSocket::getFrame(unsigned char* in_buffer, int in_length, 
 
 	return ERROR_FRAME;
 }
+
+}//namespace webSocketLib

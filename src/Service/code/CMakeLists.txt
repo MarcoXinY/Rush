@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Create a sources variable with a link to all cpp files to compile
-set(SOURCES main.cpp Server.cpp)
+set(SOURCES main.cpp Server.cpp Chat.cpp)
 
 link_directories(${CMAKE_SOURCE_DIR}/build/src/lib
                  ${CMAKE_SOURCE_DIR}/build/src/lib/http 

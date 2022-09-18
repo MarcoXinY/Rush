@@ -10,6 +10,7 @@
 #include <string>
 #include "eventPoll.hpp"
 #include "threadPool.hpp"
+#include "Chat.hpp"
 
 namespace Service
 {
@@ -45,7 +46,7 @@ private:
     std::unique_ptr<lib::event::EPoll> ePoll;
     std::unique_ptr<lib::ThreadPool> threadPool;
     std::map<int, lib::event::sockitem> userContext;
-    int httpRequestType = 0;//0 表示get  1 表示 post
+    std::map<int, Chat> chatMap;
 };
 }//Server
 
