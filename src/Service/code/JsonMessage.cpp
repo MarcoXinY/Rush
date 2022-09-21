@@ -1,4 +1,5 @@
-#include<sstream>
+#include <iostream>
+#include <sstream>
 #include "JsonMessage.hpp"
 
 namespace Service
@@ -33,14 +34,26 @@ Json ClientSendToServerMessage::to_json() const
     {"data", Json(messageDataItem)}});
 }
 
-void ClientSendToServerMessage::JsonStringToClass(std::string jsonString ,ClientSendToServerMessage& message)
+void ClientSendToServerMessage::JsonStringToClass(std::string jsonString, ClientSendToServerMessage& message)
 {
+    std::cout << "enter JsonStringToClass: " << std::endl;
+    std::cout << jsonString << std::endl;
+
     std::string err;
     const auto json = Json::parse(jsonString, err);
+
+    if (!err.empty())
+        std::cout <<"Josn parse Failed: "<< err << std::endl;
 
     std::stringstream stream;
     stream << json["operate"].dump();
     stream >> message.operate;
+
+    std::cout << "parse json data: " << std::endl;
+    std::cout << json["data"]["from"].string_value()  << std::endl;
+    std::cout << json["data"]["text"].string_value() << std::endl;
+    std::cout << json["data"]["to"].string_value() << std::endl;
+
     message.messageDataItem.from = json["data"]["from"].string_value() ;
     message.messageDataItem.text = json["data"]["text"].string_value();
     message.messageDataItem.to = json["data"]["to"].string_value();

@@ -45,9 +45,8 @@ void Chat::processRequest(unsigned char* input_frame, int input_len)
         int PayloadDataLenth = 0;
         unsigned char outBuffer[1024] = {0};
         webSocketLib::WebSocketFrameType frameType = webSocket.getFrame(input_frame, input_len, outBuffer, 1024, &PayloadDataLenth);
-        std::string resqustMessage((char*)outBuffer, PayloadDataLenth);
+        std::string resqustMessage((char*)outBuffer, PayloadDataLenth-1);
 
-        ClientSendToServerMessage receiveMessage;
         ClientSendToServerMessage::JsonStringToClass(resqustMessage, receiveMessage);
 
         std::cout << resqustMessage <<std::endl;
@@ -60,7 +59,7 @@ void Chat::processRequest(unsigned char* input_frame, int input_len)
     }
 }
 
-std::string Chat::responseWithProcessResult()
+std::string Chat::responseWithProcessResult(int code, std::string message)
 {
     if(IsConnected == false)
     {
@@ -70,20 +69,7 @@ std::string Chat::responseWithProcessResult()
     else
     {
         //握手完成 回Response
-
-        // std::string sendmsg = "abc";
-        // unsigned char sendbuffer[1024] ={0};
-
-        // int result = webSocket.makeFrame(webSocketLib::WebSocketFrameType{webSocketLib::WebSocketFrameType::TEXT_FRAME},
-        //                                 (unsigned char*)sendmsg.c_str(),
-        //                                 sendmsg.size(),
-        //                                 sendbuffer,
-        //                                 sizeof(sendbuffer));
-
-        // std::string responseFrame((char *)sendbuffer, result);
-        // std::cout << "result :" << result << std::endl;
-
-        ServerSendClientMessage responseData(0,"successfully!");
+        ServerSendClientMessage responseData(code, message);
         std::string responseDatastr =  Json(responseData).dump();
         unsigned char sendbuffer[1024] ={0};
 
@@ -99,6 +85,23 @@ std::string Chat::responseWithProcessResult()
         // std::cout << "content :" << sendmsg << std::endl;
         //printf("Recv: %s, %d Bytes\n", sendbuffer, strlen((const char *)sendbuffer));
     }
+}
+
+std::string Chat::MessageForForwardingOtherClient()
+{
+    //转发消息给其他客户端
+    std::string sendMessagestr =  Json(receiveMessage).dump();
+
+    unsigned char sendbuffer[1024] ={0};
+    int result = webSocket.makeFrame(webSocketLib::WebSocketFrameType{webSocketLib::WebSocketFrameType::TEXT_FRAME},
+                                    (unsigned char*)sendMessagestr.c_str(),
+                                    sendMessagestr.size(),
+                                    sendbuffer,
+                                    sizeof(sendbuffer));
+
+    std::string responseFrame((char *)sendbuffer, result);
+
+    return responseFrame;
 }
 
 Chat::~Chat()

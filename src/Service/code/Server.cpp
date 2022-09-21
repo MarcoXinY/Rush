@@ -111,8 +111,34 @@ void HttpServer::clientCallBack(int fd, epoll_event& event)
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
 
-    std::string response = chatMap[fd].responseWithProcessResult();
-    send(fd, response.c_str(), response.size(), 0);
+    //根据要转发的对象(client 2)找到对应的FD
+    std::string peerName = chatMap[fd].receiveMessage.messageDataItem.to;
+
+    int peerFd = 0;
+    for(auto &it : chatMap)
+    {
+        if(it.second.localName == peerName)
+        {
+            peerFd = it.first;
+            break;
+        }
+    }
+    //send text
+    if(peerFd != 0)
+    {
+        //转发
+        std::string responseToOtherClient = chatMap[fd].MessageForForwardingOtherClient();
+        send(peerFd, responseToOtherClient.c_str(), responseToOtherClient.size(), 0);
+        //返回处理结果 成功
+        std::string responseSuccess = chatMap[fd].responseWithProcessResult(0,"success");
+        send(fd, responseSuccess.c_str(), responseSuccess.size(), 0);
+    }
+    else
+    {
+        //返回处理结果 失败
+        std::string responsefail = chatMap[fd].responseWithProcessResult(1,"fail");
+        send(fd, responsefail.c_str(), responsefail.size(), 0);
+    }
 
 	struct epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
