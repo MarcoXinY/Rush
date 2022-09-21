@@ -35,9 +35,9 @@ private:
     void clientCallBack(int fd, epoll_event& event);
     int recvCallBack(int fd, epoll_event& event);
     int sendCallBack(int fd, epoll_event& event);
-    std::string fileGet();
-    void fileSave(std::string);
-    std::string GetpostResponse();
+    //std::string fileGet();
+    //void fileSave(std::string);
+    //std::string GetpostResponse();
 
     std::uint16_t listenPort{0};
     std::int32_t listenSocket{INVAILD_SOCKET};

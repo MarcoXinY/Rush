@@ -9,9 +9,7 @@
 #include "Server.hpp"
 #include "Response.hpp"
 #include "httpParser.hpp"
-#include "json11.hpp"
 
-using namespace json11;
 
 namespace Service
 {
@@ -112,19 +110,7 @@ void HttpServer::clientCallBack(int fd, epoll_event& event)
 
 int HttpServer::sendCallBack(int fd, epoll_event& event)
 {
-    // if(httpRequestType == 0) //GET
-    // {
-    //     std::string hsitory = fileGet();
-    //     http::Response response{hsitory};
-    //     send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
-    // }
 
-    // if(httpRequestType == 1) //POST
-    // {
-    //     std::string postEmptyResponse = GetpostResponse();
-    //     http::Response response{postEmptyResponse};
-	//     send(fd, response.ToString().c_str(), response.ToString().size()+1, 0);
-    // }
     std::string response = chatMap[fd].responseWithProcessResult();
     send(fd, response.c_str(), response.size(), 0);
 
@@ -231,72 +217,6 @@ void HttpServer::process()
 HttpServer::~HttpServer()
 {
     return;
-}
-
-
-std::string HttpServer::fileGet()
-{
-    std::ifstream fin("/home/wujinchao/Rush/history.json", std::ios::in);
-    std::stringstream in;
-    in << fin.rdbuf();
-    std::cout << "sent content :" << in.str() << std::endl;
-    return in.str();
-}
-
-class MessageJsonFormat {
-public:
-    int code=0;
-    std::string message="";
-    std::vector<std::string> data;
-
-    MessageJsonFormat (){}
-    void addData(std::string content){data.push_back(content);}
-    Json to_json() const { return Json::object ({
-        {"code", 0},
-        {"message", ""},
-        {"data", Json(data)}
-    });}
-};
-
-std::string HttpServer::GetpostResponse()
-{
-    MessageJsonFormat postResponse;
-    std::string points_json = Json(postResponse).dump();
-    std::cout << "points_json: " << points_json << "\n";
-    return points_json;
-}
-
-void HttpServer::fileSave(std::string data)
-{
-    //读取文本信息
-    std::cout << "save content :" << data << std::endl;
-
-    std::ifstream fin("/home/wujinchao/Rush/history.json", std::ios::in);
-    std::stringstream in;
-    in << fin.rdbuf();
-
-    std::cout << "json content before:" << in.str() << std::endl;
-    std::string err;
-    const auto json = Json::parse(in.str(), err);
-    MessageJsonFormat messageTobeSave;
-
-    fin.close();
-
-    for (auto &k : json["data"].array_items()) {
-        std::cout << "    - " << k.string_value() << "\n";
-        messageTobeSave.data.push_back(k.string_value());//读取文件里的数据
-    }
-    //添加新的数据
-    // 先解析POST的格式
-    const auto postJson = Json::parse(data, err);
-    std::cout <<"****1: " <<postJson["data"][0].string_value() << "\n";
-
-    messageTobeSave.data.push_back(postJson["data"][0].string_value());
-    //存到本地
-    std::ofstream fsave("/home/wujinchao/Rush/history.json", std::ios::out);// 清空写入
-    std::string messageTobeSave_json = Json(messageTobeSave).dump();
-    fsave << messageTobeSave_json;
-    fsave.close();
 }
 
 }

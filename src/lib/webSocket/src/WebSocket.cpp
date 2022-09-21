@@ -20,9 +20,6 @@ using namespace std;
 namespace webSocketLib
 {
 WebSocket::WebSocket() {
-	//just for Test
-	params["localName"] = "123";
-	params["peerName"] = "456";
 }
 
 WebSocketFrameType WebSocket::parseHandshake(unsigned char* input_frame, int input_len)
@@ -42,8 +39,29 @@ WebSocketFrameType WebSocket::parseHandshake(unsigned char* input_frame, int inp
 		string& header = headers_rows[i];
 		if(header.find("GET") == 0) {
 			vector<string> get_tokens = explode(header, string(" "));
+			///chat?localName=aaa&peerName=bbb
 			if(get_tokens.size() >= 2) {
 				this->resource = get_tokens[1];
+				int localNameIndex = get_tokens[1].find("localName");
+				int peerNameIndex = get_tokens[1].find("peerName");
+				int connectorIndex =  get_tokens[1].find('&');
+				if(localNameIndex != -1) //function -> getParams
+				{
+					unsigned int localNameLength = connectorIndex - localNameIndex - 10;
+					params["localName"] = get_tokens[1].substr(localNameIndex+10, localNameLength);
+				}
+				else
+				{
+					params["localName"] = "unknown";
+				}
+				if(peerNameIndex != -1)
+				{
+					params["peerName"] = get_tokens[1].substr(peerNameIndex+9);
+				}
+				else
+				{
+					params["peerName"] = "unknown";
+				}
 			}
 		}
 		else {
